@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Search - Youlify Scoreboard</title>
+    <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <!-- Disclaimer Banner -->
+        <div class="disclaimer-banner">
+            <div class="container">
+                Data presented are based on Medicare data for 2023.
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">Youlify Scoreboard</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Top 10</a>
+                </li>
+                <li class="nav-item">
+                    <a href="provider.html" class="nav-link active">Provider</a>
+                </li>
+                <li class="nav-item">
+                    <a href="state.html" class="nav-link">State</a>
+                </li>
+                <li class="nav-item">
+                    <div class="surgery-toggle">
+                        <label class="toggle-label">
+                            <input type="radio" name="surgeryType" value="27447" checked>
+                            <span class="toggle-text">Knee</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="radio" name="surgeryType" value="27130">
+                            <span class="toggle-text">Hip</span>
+                        </label>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Find Your Provider Ranking</h1>
+            
+            <div class="search-container">
+                <form id="providerSearchForm" class="search-form">
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                    <button type="submit" class="search-btn">Find My Ranking</button>
+                </form>
+            </div>
+
+            <div id="searchResults" class="search-results" style="display: none;">
+                <div id="searchedProviderSection" class="searched-provider-section" style="display: none;">
+                    <h3>Your Ranking</h3>
+                    <div id="searchedProviderCard">
+                        <!-- Searched provider card will be populated here -->
+                    </div>
+                </div>
+                <div class="search-results-header">
+                    <h3 class="full-list-heading">Full List</h3>
+                    <div class="ranking-toggle">
+                        <label class="toggle-label">
+                            <input type="radio" name="rankingType" value="services" checked>
+                            <span class="toggle-text">By Total Services</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="radio" name="rankingType" value="payment">
+                            <span class="toggle-text">By Avg Payment</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="providerRanking" class="provider-ranking">
+                    <!-- Provider ranking will be populated here -->
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error-message" style="display: none;">
+                <!-- Error messages will be displayed here -->
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
