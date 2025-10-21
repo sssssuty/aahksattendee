@@ -24,12 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
         currentRankingType = savedRankingType;
     }
     
+    // Set toggle states immediately to prevent flicker
+    setToggleStatesImmediately();
+    
     // Use requestAnimationFrame to ensure DOM is fully ready
     requestAnimationFrame(() => {
-        // Restore surgery type selection
+        // Restore toggle styling
         restoreSurgeryTypeSelection();
-        
-        // Restore ranking type selection
         restoreRankingTypeSelection();
         
         // Load data
@@ -44,6 +45,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Set toggle states immediately to prevent flicker
+function setToggleStatesImmediately() {
+    // Set surgery type toggles
+    const surgeryToggles = document.querySelectorAll('input[name="surgeryType"]');
+    surgeryToggles.forEach(toggle => {
+        if (toggle.value === currentSurgeryType) {
+            toggle.checked = true;
+        } else {
+            toggle.checked = false;
+        }
+    });
+    
+    // Set ranking type toggles
+    const rankingToggles = document.querySelectorAll('input[name="rankingType"]');
+    rankingToggles.forEach(toggle => {
+        if (toggle.value === currentRankingType) {
+            toggle.checked = true;
+        } else {
+            toggle.checked = false;
+        }
+    });
+}
 
 // Load and process the JSON data
 function loadData() {
@@ -85,7 +109,7 @@ function processProvidersData() {
         if (providerMap.has(key)) {
             const existing = providerMap.get(key);
             existing.Tot_Srvcs += record.Tot_Srvcs;
-            existing.Tot_Benes += record.Tot_Benes;
+            existing.rvu += record.rvu;
         } else {
             // Create full name with credentials
             const credentials = record.Credentials || '';
@@ -98,7 +122,7 @@ function processProvidersData() {
                 credentials: credentials,
                 state: state,
                 Tot_Srvcs: record.Tot_Srvcs,
-                Tot_Benes: record.Tot_Benes,
+                rvu: record.rvu,
                 Avg_Sbmtd_Chrg: record.Avg_Sbmtd_Chrg,
                 Avg_Mdcr_Alowd_Amt: record.Avg_Mdcr_Alowd_Amt,
                 Avg_Mdcr_Pymt_Amt: record.Avg_Mdcr_Pymt_Amt,
@@ -166,7 +190,7 @@ function displayTopProviders() {
         return `
             <div class="provider-card ${rankClass}">
                 <div class="rank ${rankClass}">
-                    <div class="national-rank">#${rank} National</div>
+                    <div class="national-rank">#${rank}</div>
                     <div class="state-rank">#${provider.stateRank || 1} in ${provider.state || 'State'}</div>
                 </div>
                 <div class="provider-info">
@@ -177,8 +201,8 @@ function displayTopProviders() {
                             <div class="stat-value">${provider.Tot_Srvcs}</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-label" data-label="Total Beneficiaries">Total Beneficiaries</div>
-                            <div class="stat-value">${provider.Tot_Benes}</div>
+                            <div class="stat-label" data-label="RVU">RVU</div>
+                            <div class="stat-value">${provider.rvu}</div>
                         </div>
                         <div class="stat">
                             <div class="stat-label" data-label="Avg Payment">Avg Payment</div>
@@ -248,31 +272,15 @@ function handleSurgeryTypeChange(event) {
 
 // Restore surgery type selection from localStorage
 function restoreSurgeryTypeSelection() {
-    const surgeryToggles = document.querySelectorAll('input[name="surgeryType"]');
-    surgeryToggles.forEach(toggle => {
-        if (toggle.value === currentSurgeryType) {
-            toggle.checked = true;
-        } else {
-            toggle.checked = false;
-        }
-    });
-    
-    // Update toggle styling immediately
+    // Toggle states are already set in setToggleStatesImmediately()
+    // Just update the styling
     updateToggleStyling();
 }
 
 // Restore ranking type selection from localStorage
 function restoreRankingTypeSelection() {
-    const rankingToggles = document.querySelectorAll('input[name="rankingType"]');
-    rankingToggles.forEach(toggle => {
-        if (toggle.value === currentRankingType) {
-            toggle.checked = true;
-        } else {
-            toggle.checked = false;
-        }
-    });
-    
-    // Update toggle styling immediately
+    // Toggle states are already set in setToggleStatesImmediately()
+    // Just update the styling
     updateToggleStyling();
 }
 
@@ -403,7 +411,21 @@ function handleProviderSearch(event) {
     const errorMessage = document.getElementById('errorMessage');
     
     // Hide previous results
-    if (searchResults) searchResults.style.display = 'none';
+    if (searchResults) {
+        searchResults.style.display = 'none';
+        searchResults.classList.remove('fade-in');
+        
+        // Remove fade-in classes from all elements
+        const yourRankingTitle = document.querySelector('.searched-provider-section h3');
+        const yourRankingCard = document.querySelector('.searched-provider-section .provider-card');
+        const fullListTitle = document.querySelector('.search-results-header h3');
+        const providerCards = document.querySelectorAll('.search-results .provider-card');
+        
+        if (yourRankingTitle) yourRankingTitle.classList.remove('fade-in');
+        if (yourRankingCard) yourRankingCard.classList.remove('fade-in');
+        if (fullListTitle) fullListTitle.classList.remove('fade-in');
+        providerCards.forEach(card => card.classList.remove('fade-in'));
+    }
     if (errorMessage) errorMessage.style.display = 'none';
     
     if (providerIndex === -1) {
@@ -469,6 +491,9 @@ function displayProviderRanking(providerIndex, fullName) {
     
     if (providerRanking) {
         providerRanking.innerHTML = rankingHTML;
+        providerRanking.style.opacity = '1';
+        providerRanking.style.visibility = 'visible';
+        providerRanking.style.transform = 'translateY(0)';
     }
     
     // Show the searched provider section at the top
@@ -482,6 +507,36 @@ function displayProviderRanking(providerIndex, fullName) {
     
     if (searchResults) {
         searchResults.style.display = 'block';
+        searchResults.style.visibility = 'visible';
+        searchResults.style.opacity = '1';
+        searchResults.style.transform = 'translateY(0)';
+        
+        // Staggered fade-in effects with equal time intervals
+        const elements = [
+            { selector: '.searched-provider-section h3', delay: 200 },
+            { selector: '.searched-provider-section .provider-card', delay: 400 },
+            { selector: '.search-results-header h3', delay: 600 }
+        ];
+        
+        // Add the main elements with equal 200ms intervals
+        elements.forEach(({ selector, delay }) => {
+            setTimeout(() => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.classList.add('fade-in');
+                }
+            }, delay);
+        });
+        
+        // Add provider cards with equal 200ms intervals starting at 800ms
+        setTimeout(() => {
+            const providerCards = document.querySelectorAll('.search-results .provider-card');
+            providerCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('fade-in');
+                }, index * 200); // 0ms, 200ms, 400ms, 600ms, etc. for each card
+            });
+        }, 800);
     }
 }
 
@@ -497,6 +552,12 @@ function hideAllContent() {
     if (scoreboardElement) {
         scoreboardElement.style.visibility = 'hidden';
         scoreboardElement.style.opacity = '0';
+        
+        // Remove fade-in classes from provider cards
+        const providerCards = document.querySelectorAll('.scoreboard .provider-card');
+        providerCards.forEach(card => {
+            card.classList.remove('fade-in');
+        });
     }
     if (searchResults) {
         searchResults.style.visibility = 'hidden';
@@ -528,6 +589,16 @@ function showAllContent() {
     if (scoreboardElement) {
         scoreboardElement.style.visibility = 'visible';
         scoreboardElement.style.opacity = '1';
+        
+        // Staggered fade-in effects for provider cards on Top 10 page
+        setTimeout(() => {
+            const providerCards = document.querySelectorAll('.scoreboard .provider-card');
+            providerCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('fade-in');
+                }, 100 + (index * 100)); // 100ms base delay + 100ms per item
+            });
+        }, 50); // Small delay to ensure HTML is rendered
     }
     if (searchResults) {
         searchResults.style.visibility = 'visible';
@@ -559,7 +630,7 @@ function createProviderCardHTML(provider, rank, className) {
     return `
         <div class="provider-card ${className}">
             <div class="rank ${className}">
-                <div class="national-rank">#${rank} National</div>
+                <div class="national-rank">#${rank}</div>
                 <div class="state-rank">#${provider.stateRank || 1} in ${provider.state || 'State'}</div>
             </div>
             <div class="provider-info">
@@ -570,8 +641,8 @@ function createProviderCardHTML(provider, rank, className) {
                         <div class="stat-value">${provider.Tot_Srvcs}</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-label" data-label="Total Beneficiaries">Total Beneficiaries</div>
-                        <div class="stat-value">${provider.Tot_Benes}</div>
+                        <div class="stat-label" data-label="RVU">RVU</div>
+                        <div class="stat-value">${provider.rvu}</div>
                     </div>
                     <div class="stat">
                         <div class="stat-label" data-label="Avg Payment">Avg Payment</div>
@@ -595,7 +666,7 @@ function createStateProviderCardHTML(provider, nationalRank, className) {
         <div class="provider-card ${className}">
             <div class="rank ${className}">
                 <div class="state-rank-large">#${provider.stateRank || 1} in ${provider.state || 'State'}</div>
-                <div class="national-rank-small">#${nationalRank} National</div>
+                <div class="national-rank-small">#${nationalRank} Full List</div>
             </div>
             <div class="provider-info">
                 <div class="provider-name">${provider.fullName}</div>
@@ -605,8 +676,8 @@ function createStateProviderCardHTML(provider, nationalRank, className) {
                         <div class="stat-value">${provider.Tot_Srvcs}</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-label" data-label="Total Beneficiaries">Total Beneficiaries</div>
-                        <div class="stat-value">${provider.Tot_Benes}</div>
+                        <div class="stat-label" data-label="RVU">RVU</div>
+                        <div class="stat-value">${provider.rvu}</div>
                     </div>
                     <div class="stat">
                         <div class="stat-label" data-label="Avg Payment">Avg Payment</div>
@@ -685,6 +756,16 @@ function displayStateRankings(stateCode, stateName, shouldScroll = true) {
     
     stateResults.style.display = 'block';
     
+    // Staggered fade-in effects for state provider cards
+    setTimeout(() => {
+        const stateProviderCards = document.querySelectorAll('.state-ranking .provider-card');
+        stateProviderCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.classList.add('fade-in');
+            }, 100 + (index * 100)); // 100ms base delay + 100ms per item
+        });
+    }, 50); // Small delay to ensure HTML is rendered
+    
     // Scroll to results only if shouldScroll is true
     if (shouldScroll) {
         stateResults.scrollIntoView({ behavior: 'smooth' });
@@ -713,6 +794,12 @@ function closeStateResults() {
     const stateResults = document.getElementById('stateResults');
     if (stateResults) {
         stateResults.style.display = 'none';
+        
+        // Remove fade-in classes from state provider cards
+        const stateProviderCards = document.querySelectorAll('.state-ranking .provider-card');
+        stateProviderCards.forEach(card => {
+            card.classList.remove('fade-in');
+        });
     }
 }
 

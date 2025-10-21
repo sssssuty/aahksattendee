@@ -35,11 +35,11 @@
                 <li class="nav-item">
                     <div class="surgery-toggle">
                         <label class="toggle-label">
-                            <input type="radio" name="surgeryType" value="27447" checked>
+                            <input type="radio" name="surgeryType" value="27447" id="kneeToggle">
                             <span class="toggle-text">Knee</span>
                         </label>
                         <label class="toggle-label">
-                            <input type="radio" name="surgeryType" value="27130">
+                            <input type="radio" name="surgeryType" value="27130" id="hipToggle">
                             <span class="toggle-text">Hip</span>
                         </label>
                     </div>
@@ -65,11 +65,11 @@
                     <div class="header-controls">
                         <div class="ranking-toggle">
                             <label class="toggle-label">
-                                <input type="radio" name="rankingType" value="services" checked>
+                                <input type="radio" name="rankingType" value="services" id="servicesToggle">
                                 <span class="toggle-text">By Total Services</span>
                             </label>
                             <label class="toggle-label">
-                                <input type="radio" name="rankingType" value="payment">
+                                <input type="radio" name="rankingType" value="payment" id="paymentToggle">
                                 <span class="toggle-text">By Avg Payment</span>
                             </label>
                         </div>
@@ -86,6 +86,27 @@
     <script src="data.js"></script>
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Set toggle states immediately to prevent flash
+        (function() {
+            const savedSurgeryType = localStorage.getItem('selectedSurgeryType') || '27447';
+            const savedRankingType = localStorage.getItem('selectedRankingType') || 'services';
+            
+            // Set surgery toggle
+            if (savedSurgeryType === '27447') {
+                document.getElementById('kneeToggle').checked = true;
+            } else {
+                document.getElementById('hipToggle').checked = true;
+            }
+            
+            // Set ranking toggle
+            if (savedRankingType === 'services') {
+                document.getElementById('servicesToggle').checked = true;
+            } else {
+                document.getElementById('paymentToggle').checked = true;
+            }
+        })();
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

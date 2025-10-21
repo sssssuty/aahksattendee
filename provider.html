@@ -33,11 +33,11 @@
                 <li class="nav-item">
                     <div class="surgery-toggle">
                         <label class="toggle-label">
-                            <input type="radio" name="surgeryType" value="27447" checked>
+                            <input type="radio" name="surgeryType" value="27447" id="kneeToggle">
                             <span class="toggle-text">Knee</span>
                         </label>
                         <label class="toggle-label">
-                            <input type="radio" name="surgeryType" value="27130">
+                            <input type="radio" name="surgeryType" value="27130" id="hipToggle">
                             <span class="toggle-text">Hip</span>
                         </label>
                     </div>
@@ -67,23 +67,25 @@
 
             <div id="searchResults" class="search-results" style="display: none;">
                 <div id="searchedProviderSection" class="searched-provider-section" style="display: none;">
-                    <h3>Your Ranking</h3>
+                    <div class="searched-provider-header">
+                        <h3>Your Ranking</h3>
+                        <div class="ranking-toggle">
+                            <label class="toggle-label">
+                                <input type="radio" name="rankingType" value="services" id="servicesToggle">
+                                <span class="toggle-text">By Total Services</span>
+                            </label>
+                            <label class="toggle-label">
+                                <input type="radio" name="rankingType" value="payment" id="paymentToggle">
+                                <span class="toggle-text">By Avg Payment</span>
+                            </label>
+                        </div>
+                    </div>
                     <div id="searchedProviderCard">
                         <!-- Searched provider card will be populated here -->
                     </div>
                 </div>
                 <div class="search-results-header">
                     <h3 class="full-list-heading">Full List</h3>
-                    <div class="ranking-toggle">
-                        <label class="toggle-label">
-                            <input type="radio" name="rankingType" value="services" checked>
-                            <span class="toggle-text">By Total Services</span>
-                        </label>
-                        <label class="toggle-label">
-                            <input type="radio" name="rankingType" value="payment">
-                            <span class="toggle-text">By Avg Payment</span>
-                        </label>
-                    </div>
                 </div>
                 <div id="providerRanking" class="provider-ranking">
                     <!-- Provider ranking will be populated here -->
@@ -97,6 +99,27 @@
     </main>
 
     <script src="data.js"></script>
+    <script>
+        // Set toggle states immediately to prevent flash
+        (function() {
+            const savedSurgeryType = localStorage.getItem('selectedSurgeryType') || '27447';
+            const savedRankingType = localStorage.getItem('selectedRankingType') || 'services';
+            
+            // Set surgery toggle
+            if (savedSurgeryType === '27447') {
+                document.getElementById('kneeToggle').checked = true;
+            } else {
+                document.getElementById('hipToggle').checked = true;
+            }
+            
+            // Set ranking toggle
+            if (savedRankingType === 'services') {
+                document.getElementById('servicesToggle').checked = true;
+            } else {
+                document.getElementById('paymentToggle').checked = true;
+            }
+        })();
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
