@@ -202,7 +202,7 @@ function displayTopProviders() {
                         </div>
                         <div class="stat">
                             <div class="stat-label" data-label="RVU">RVU</div>
-                            <div class="stat-value">${provider.rvu}</div>
+                            <div class="stat-value">${formatNumber(provider.rvu)}</div>
                         </div>
                         <div class="stat">
                             <div class="stat-label" data-label="Avg Payment">Avg Payment</div>
@@ -623,6 +623,11 @@ function formatCurrency(amount) {
     return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+// Format numbers with commas (for RVU values)
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 // Create provider card HTML
 function createProviderCardHTML(provider, rank, className) {
     const totalPayment = provider.Tot_Srvcs * provider.Avg_Mdcr_Pymt_Amt;
@@ -642,7 +647,7 @@ function createProviderCardHTML(provider, rank, className) {
                     </div>
                     <div class="stat">
                         <div class="stat-label" data-label="RVU">RVU</div>
-                        <div class="stat-value">${provider.rvu}</div>
+                        <div class="stat-value">${formatNumber(provider.rvu)}</div>
                     </div>
                     <div class="stat">
                         <div class="stat-label" data-label="Avg Payment">Avg Payment</div>
@@ -677,7 +682,7 @@ function createStateProviderCardHTML(provider, nationalRank, className) {
                     </div>
                     <div class="stat">
                         <div class="stat-label" data-label="RVU">RVU</div>
-                        <div class="stat-value">${provider.rvu}</div>
+                        <div class="stat-value">${formatNumber(provider.rvu)}</div>
                     </div>
                     <div class="stat">
                         <div class="stat-label" data-label="Avg Payment">Avg Payment</div>
